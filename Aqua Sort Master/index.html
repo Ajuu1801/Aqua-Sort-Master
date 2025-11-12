@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4121738310210766"
+        crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1, viewport-fit=cover">
+    <meta name="google-adsense-account" content="ca-pub-4121738310210766">
+    <title>Aqua Sort Master — Mobile (Firebase)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth-compat.js"></script>
+
+    <style>
+        :root {
+            --bg: #071022;
+            --panel: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .01));
+            --muted: #9fb0c8;
+            --accent1: #60a5fa;
+            --accent2: #6ee7b7;
+            --glass: #071a2a;
+            --tube-w: 56px;
+            --tube-h: 220px;
+            --capacity: 4;
+            --card-radius: 14px;
+            --coin-color: #f6c85f;
+            --selection-glow: 0 12px 30px rgba(96, 165, 250, .18);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: radial-gradient(700px 300px at 10% 15%, rgba(110, 231, 183, .02), transparent), radial-gradient(600px 240px at 90% 80%, rgba(96, 165, 250, .02), transparent), var(--bg);
+            color: #eaf2fb;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 8px;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1100px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .01), rgba(255, 255, 255, .00));
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, .6);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 12px;
+            position: relative;
+            /* overflow: hidden; */
+        }
+
+        @media(min-width:768px) {
+            .app {
+                flex-direction: row;
+            }
+        }
+
+        .left {
+            flex: 1 1 60%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 8px;
+            align-items: center;
+        }
+
+        .topbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, var(--accent2), var(--accent1));
+            box-shadow: 0 8px 26px rgba(96, 165, 250, 0.12);
+        }
+
+        .app-title {
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 0.6px;
+        }
+
+        .small-muted {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--muted);
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .16s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            color: #fff;
+        }
+
+        .btn.primary {
+            background: linear-gradient(90deg, var(--accent2), var(--accent1));
+            color: #022927;
+            border: none;
+            box-shadow: 0 8px 28px rgba(96, 165, 250, 0.08);
+        }
+
+        .board {
+            width: 100%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.00));
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 320px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            overflow-x: auto;
+        }
+
+        /* .tubes-wrap {
+            display: flex;
+            gap: 12px;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: flex-end;
+            max-width: 100%;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        } */
+
+        .tubes-wrap {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            /* allow tubes to wrap to next line */
+            justify-content: center;
+            align-items: flex-end;
+            max-width: 100%;
+            overflow-x: hidden;
+            /* remove horizontal scroll */
+            padding-bottom: 8px;
+        }
+
+
+        .tube {
+            width: var(--tube-w);
+            height: var(--tube-h);
+            border-radius: 14px 14px 8px 8px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            border: 1.2px solid rgba(255, 255, 255, 0.03);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 12px;
+            transition: transform .14s ease, box-shadow .14s ease;
+            touch-action: manipulation;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .tube.selected {
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: var(--selection-glow), 0 18px 60px rgba(2, 6, 23, 0.6);
+            outline: 3px solid rgba(96, 165, 250, 0.12);
+        }
+
+        .liquid-stack {
+            width: calc(var(--tube-w) - 12px);
+            height: calc(var(--tube-h) - 80px);
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: hidden;
+            border-radius: 10px;
+            padding-top: 6px;
+        }
+
+        .segment {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            height: calc((var(--tube-h) - 80px)/var(--capacity));
+            box-shadow: inset 0 -6px 18px rgba(0, 0, 0, 0.35);
+            transition: all .28s cubic-bezier(.22, .9, .32, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 700;
+            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+        }
+
+        .segment.empty {
+            background: transparent;
+            opacity: 0.12;
+            border: 1px dashed rgba(255, 255, 255, 0.03);
+        }
+
+        .selection-hint {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 12px;
+            z-index: 60;
+            background: rgba(3, 6, 14, 0.7);
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            color: var(--muted);
+            font-size: 12px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .right {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .right {
+                width: 34%;
+            }
+        }
+
+        .panel {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+        }
+
+        .big {
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .coin {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.08);
+            padding: 6px 8px;
+            border-radius: 10px;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 6px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .level-card {
+            padding: 6px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 700;
+            color: var(--muted);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .level-card.unlocked {
+            color: #fff;
+            border-color: rgba(96, 165, 250, 0.12);
+            box-shadow: 0 6px 16px rgba(96, 165, 250, 0.04);
+        }
+
+        .level-card.current {
+            outline: 2px solid rgba(96, 165, 250, 0.08);
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(3, 8, 16, 0.55);
+            z-index: 120;
+            padding: 20px;
+        }
+
+        .menu-box {
+            width: 100%;
+            max-width: 420px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* MOBILE FIXES */
+        @media(max-width:767px) {
+            .tube {
+                width: 40px;
+                height: 160px;
+            }
+
+            .liquid-stack {
+                height: 120px;
+            }
+
+            .segment {
+                height: calc((120px)/var(--capacity));
+                margin-bottom: 4px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .levels-grid {
+                grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app" id="app">
+        <!-- LEFT PANEL (Game Board) -->
+
+
+        <div class="left">
+            <div class="topbar">
+                <div class="brand">
+                    <div class="logo-dot"></div>
+                    <div>
+                        <div class="app-title">Aqua Sort Master</div>
+                        <div class="small-muted">Water Sort Puzzle</div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn" id="btn-menu">Menu</button>
+                    <button class="btn" id="btn-undo">Undo</button>
+                    <button class="btn" id="btn-restart">Restart</button>
+                </div>
+            </div>
+            <div class="board" id="board">
+                <div class="tubes-wrap" id="tubesWrap" aria-hidden="false"></div>
+            </div>
+
+
+
+
+            <!-- Display Ad -->
+            <div style="width:100%; text-align:center; margin:12px 0;">
+                <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4121738310210766"
+                    data-ad-slot="3104244941" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
+
+
+
+
+
+            <div style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:6px 4px">
+                <div class="muted">Level <span id="levelNum">1</span> • Moves <span id="moves">0</span></div>
+                <div class="muted">Best: <span id="bestVal">—</span></div>
+            </div>
+            <div class="selection-hint" id="selectionHint">Tap a tube to select it</div>
+        </div>
+
+        <!-- RIGHT PANEL (Coins, Level Select, Daily) -->
+        <div class="right">
+            <div class="panel">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <div class="big" id="titlePanel">Level 1</div>
+                        <div class="muted">2000 Levels — Difficulty increases every 5 levels</div>
+                    </div>
+                    <div class="coin" id="coinArea">
+                        <div style="font-weight:800" id="coinCount">0</div>
+                        <div style="color:var(--coin-color);font-weight:800">●</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div class="muted">Controls</div>
+                    <div class="muted">Mobile: tap • Desktop: click</div>
+                </div>
+                <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                    <button class="btn primary" id="btn-claim-daily">Claim Daily (+50)</button>
+                    <button class="btn" id="btn-add-tube">Add Tube (-30)</button>
+                </div>
+                <div class="muted" style="margin-top:6px;font-size:12px">Add Tube uses coins to give 1 extra empty tube
+                    for the current level.</div>
+            </div>
+
+            <div class="panel">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div class="muted">Level Select</div>
+                    <div class="muted">Unlocked: <span id="unlockedCount">1</span></div>
+                </div>
+                <div class="levels-grid" id="levelsGrid"></div>
+                <div style="display:flex;justify-content:center;gap:6px;margin-top:6px">
+                    <button class="btn" id="prevPage">Prev</button>
+                    <span class="muted" id="pageInfo">1/1</span>
+                    <button class="btn" id="nextPage">Next</button>
+                </div>
+            </div>
+
+
+            <div class="panel center">
+                <div class="muted">Options / Account</div>
+                <div style="display:flex;gap:6px;margin-top:6px;justify-content:center">
+                    <div id="auth-container"></div>
+                    <button class="btn primary" id="btn-google-signin">Sign in with Google</button>
+                    <button class="btn" id="btn-reset">Reset</button>
+                </div>
+                <div class="muted" style="margin-top:6px;font-size:12px">Enjoy the Game</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- In-feed Ad -->
+    <div style="width:100%; text-align:center; margin:12px 0;">
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4121738310210766"
+            data-ad-slot="5538836592" data-ad-format="autorelaxed" data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+
+    <!-- Win overlay -->
+    <div class="overlay" id="winOverlay" style="display:none;">
+        <div class="menu-box">
+            <div style="font-size:18px;font-weight:700;margin-bottom:12px">Level Completed!</div>
+            <div id="winCoins" style="margin-bottom:12px">+20 Coins</div>
+            <button class="btn primary" id="btn-next-level">Next Level</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDca9DC_UcUCVsA7EnNejQX-7auRlb2Wq0",
+            authDomain: "aqua-sort-master.firebaseapp.com",
+            projectId: "aqua-sort-master",
+            storageBucket: "aqua-sort-master.firebasestorage.app",
+            messagingSenderId: "223316999559",
+            appId: "1:223316999559:web:2249d41d0bdeda03c32722"
+
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const authContainer = document.getElementById('auth-container');
+        const signInBtn = document.getElementById('btn-google-signin');
+
+        function showUser(user) {
+            authContainer.innerHTML = `
+        <div style="display:flex;align-items:center;gap:6px">
+            <span>${user.displayName}</span>
+            <button class="btn" id="btn-logout">Logout</button>
+        </div>
+    `;
+
+            // Handle logout
+            document.getElementById('btn-logout').onclick = async () => {
+                await auth.signOut();
+                authContainer.innerHTML = '';
+                signInBtn.style.display = 'inline-block';
+            };
+        }
+
+        // Sign in button click
+        signInBtn.onclick = async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                signInBtn.style.display = 'none'; // hide sign in button
+                showUser(user); // show user info
+            } catch (err) {
+                console.error(err);
+                alert('Login failed!');
+            }
+        };
+
+        // Auto-detect if user is already signed in
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                signInBtn.style.display = 'none';
+                showUser(user);
+            } else {
+                signInBtn.style.display = 'inline-block';
+                authContainer.innerHTML = '';
+            }
+        });
+
+
+
+
+        const CONFIG = {
+            LEVELS: 2000,
+            CAPACITY: 4,
+            COLORS: ['#60a5fa', '#6ee7b7', '#f472b6', '#f59e0b', '#a78bfa', '#fb7185', '#34d399', '#60c6f3', '#f97316', '#ef4444', '#c084fc', '#fda4af'],
+            WIN_REWARD: 20,
+            DAILY_REWARD: 50,
+            ADD_TUBE_COST: 30
+        };
+
+        const LOCAL_KEY = "aquaSortSave";
+
+        const SELECTOR = {
+            tubesWrap: document.getElementById('tubesWrap'),
+            levelNum: document.getElementById('levelNum'),
+            titlePanel: document.getElementById('titlePanel'),
+            moves: document.getElementById('moves'),
+            bestVal: document.getElementById('bestVal'),
+            coinCount: document.getElementById('coinCount'),
+            selectionHint: document.getElementById('selectionHint'),
+            levelsGrid: document.getElementById('levelsGrid'),
+            unlockedCount: document.getElementById('unlockedCount'),
+            winOverlay: document.getElementById('winOverlay'),
+            winCoins: document.getElementById('winCoins')
+        };
+
+        let history = [];
+
+        let state = {
+            coins: 0,
+            level: 1,
+            unlocked: 1,
+            tubes: [],
+            moves: 0,
+            best: {},
+            lastDailyClaim: 0
+        };
+
+        // --- LOCAL STORAGE SAVE/LOAD ---
+        function saveState() {
+            localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem(LOCAL_KEY);
+            if (saved) {
+                Object.assign(state, JSON.parse(saved));
+            }
+            initLevel();
+        }
+
+
+
+
+
+
+
+
+
+
+        // --- GENERATE SOLVABLE TUBES ---
+        function generateTubes(level) {
+            const numColors = Math.min(5 + Math.floor(level / 5), 12);
+            const tubeCount = numColors + 2; // 2 empty tubes
+            let tubes = Array.from({ length: tubeCount }, () => []);
+
+            let blocks = [];
+            for (let i = 0; i < numColors; i++) {
+                for (let j = 0; j < CONFIG.CAPACITY; j++) {
+                    blocks.push(CONFIG.COLORS[i]);
+                }
+            }
+
+            while (blocks.length) {
+                const block = blocks.pop();
+                let emptyTubes = tubes.filter(t => t.length < CONFIG.CAPACITY);
+                const tube = emptyTubes[Math.floor(Math.random() * emptyTubes.length)];
+                tube.push(block);
+            }
+
+            return tubes;
+        }
+
+        // --- INIT LEVEL ---
+        function initLevel() {
+            if (!state.tubes.length) {
+                state.tubes = generateTubes(state.level);
+            }
+            state.moves = 0;
+            history = [];
+            render();
+            renderLevels();
+        }
+
+        // --- RENDER ---
+        function render() {
+            SELECTOR.tubesWrap.innerHTML = '';
+            state.tubes.forEach((tube, index) => {
+                const tubeEl = document.createElement('div');
+                tubeEl.className = 'tube';
+                const stack = document.createElement('div');
+                stack.className = 'liquid-stack';
+                for (let i = 0; i < CONFIG.CAPACITY; i++) {
+                    const color = tube[i];
+                    const seg = document.createElement('div');
+                    seg.className = 'segment';
+                    if (!color) seg.classList.add('empty');
+                    else seg.style.background = color;
+                    stack.appendChild(seg);
+                }
+                tubeEl.appendChild(stack);
+                tubeEl.onclick = () => handleTubeClick(index);
+                SELECTOR.tubesWrap.appendChild(tubeEl);
+            });
+
+            SELECTOR.levelNum.textContent = state.level;
+            SELECTOR.titlePanel.textContent = `Level ${state.level}`;
+            SELECTOR.moves.textContent = state.moves;
+            SELECTOR.coinCount.textContent = state.coins;
+            SELECTOR.bestVal.textContent = state.best[state.level] || '—';
+            SELECTOR.unlockedCount.textContent = state.unlocked;
+            saveState();
+        }
+
+        // --- POUR LOGIC ---
+        let selectedTube = null;
+        function handleTubeClick(idx) {
+            if (selectedTube === null) {
+                selectedTube = idx;
+                document.querySelectorAll('.tube')[idx].classList.add('selected');
+            } else {
+                if (selectedTube === idx) {
+                    document.querySelectorAll('.tube')[idx].classList.remove('selected');
+                    selectedTube = null;
+                    return;
+                }
+                saveHistory();
+                pour(selectedTube, idx);
+                document.querySelectorAll('.tube')[selectedTube].classList.remove('selected');
+                selectedTube = null;
+                render();
+                checkWin();
+            }
+        }
+
+        function pour(fromIdx, toIdx) {
+            const fromTube = state.tubes[fromIdx];
+            const toTube = state.tubes[toIdx];
+            if (!fromTube.length) return;
+
+            const color = fromTube[fromTube.length - 1];
+            let moveCount = 0;
+
+            if (toTube.length && toTube[toTube.length - 1] !== color) return;
+            if (toTube.length >= CONFIG.CAPACITY) return;
+
+            while (fromTube.length && fromTube[fromTube.length - 1] === color && toTube.length < CONFIG.CAPACITY) {
+                toTube.push(fromTube.pop());
+                moveCount++;
+            }
+
+            if (moveCount) state.moves += moveCount;
+        }
+
+        // --- WIN CHECK ---
+        // function checkWin() {
+        //     if (state.tubes.every(t => t.length === 0 || (t.length === CONFIG.CAPACITY && new Set(t).size === 1))) {
+        //         SELECTOR.winCoins.textContent = `+${CONFIG.WIN_REWARD} Coins`;
+        //         state.coins += CONFIG.WIN_REWARD;
+        //         state.level++;
+        //         if (state.level > state.unlocked) state.unlocked = state.level;
+        //         SELECTOR.winOverlay.style.display = 'flex';
+        //         render();
+        //     }
+        // }
+
+
+
+
+        function checkWin() {
+            if (state.tubes.every(t => t.length === 0 || (t.length === CONFIG.CAPACITY && new Set(t).size === 1))) {
+                SELECTOR.winCoins.textContent = `+${CONFIG.WIN_REWARD} Coins`;
+                state.coins += CONFIG.WIN_REWARD;
+                state.level++;
+                if (state.level > state.unlocked) state.unlocked = state.level;
+                SELECTOR.winOverlay.style.display = 'flex';
+                render();
+
+                // Show interstitial ad only on mobile
+                showInterstitialAd();
+            }
+        }
+
+
+        document.getElementById('btn-next-level').onclick = () => {
+            SELECTOR.winOverlay.style.display = 'none';
+            state.tubes = generateTubes(state.level);
+            initLevel();
+        };
+
+        // --- HISTORY & UNDO ---
+        function saveHistory() {
+            history.push(JSON.parse(JSON.stringify(state.tubes)));
+            if (history.length > 20) history.shift();
+        }
+
+        document.getElementById('btn-undo').onclick = () => {
+            if (!history.length) return;
+            state.tubes = history.pop();
+            render();
+        };
+
+        // --- RESTART ---
+        document.getElementById('btn-restart').onclick = () => {
+            state.tubes = generateTubes(state.level);
+            state.moves = 0;
+            history = [];
+            render();
+        };
+
+        // --- ADD TUBE ---
+        document.getElementById('btn-add-tube').onclick = () => {
+            if (state.coins < CONFIG.ADD_TUBE_COST) return alert('Not enough coins!');
+            state.tubes.push([]);
+            state.coins -= CONFIG.ADD_TUBE_COST;
+            render();
+        };
+
+        // --- DAILY CLAIM ---
+        document.getElementById('btn-claim-daily').onclick = () => {
+            const now = Date.now();
+            if (now - state.lastDailyClaim < 86400000) return alert('Daily reward already claimed!');
+            state.coins += CONFIG.DAILY_REWARD;
+            state.lastDailyClaim = now;
+            render();
+            alert(`Claimed +${CONFIG.DAILY_REWARD} coins!`);
+        };
+
+        // --- RESET ---
+        document.getElementById('btn-reset').onclick = () => {
+            state = { coins: 0, level: 1, unlocked: 1, tubes: [], moves: 0, best: {}, lastDailyClaim: 0 };
+            initLevel();
+            alert('Progress reset!');
+        };
+
+        // --- LEVEL GRID ---
+        function renderLevels() {
+            SELECTOR.levelsGrid.innerHTML = '';
+            for (let i = 1; i <= CONFIG.LEVELS; i++) {
+                const card = document.createElement('div');
+                card.className = 'level-card';
+                if (i <= state.unlocked) card.classList.add('unlocked');
+                if (i === state.level) card.classList.add('current');
+                card.textContent = i;
+                card.onclick = () => {
+                    if (i <= state.unlocked) {
+                        state.level = i;
+                        state.tubes = generateTubes(state.level);
+                        initLevel();
+                    }
+                };
+                SELECTOR.levelsGrid.appendChild(card);
+            }
+        }
+
+        // --- INITIAL LOAD ---
+        loadState();
+
+
+
+
+        // import { AdMob } from '@capacitor-community/admob';
+
+        // AdMob.initialize({
+        //     requestTrackingAuthorization: true
+        // });
+
+        // function showBannerAd() {
+        //     AdMob.showBanner({
+        //         adId: 'ca-app-pub-4121738310210766/3267722394',
+        //         position: 'BOTTOM_CENTER',
+        //         margin: 0
+        //     });
+        // }
+
+        // function showInterstitialAd() {
+        //     AdMob.prepareInterstitial({
+        //         adId: 'ca-app-pub-4121738310210766/3790466576',
+        //         autoShow: true
+        //     });
+        // }
+
+        // window.addEventListener('load', () => {
+        //     showBannerAd();
+        // });
+
+
+        // function checkWin() {
+        //     if (state.tubes.every(t => t.length === 0 || (t.length === CONFIG.CAPACITY && new Set(t).size === 1))) {
+        //         SELECTOR.winCoins.textContent = `+${CONFIG.WIN_REWARD} Coins`;
+        //         state.coins += CONFIG.WIN_REWARD;
+        //         state.level++;
+        //         if (state.level > state.unlocked) state.unlocked = state.level;
+        //         SELECTOR.winOverlay.style.display = 'flex';
+        //         render();
+
+        //         showInterstitialAd();
+        //     }
+        // }
+
+
+
+
+    </script>
+
+</body>
+
+</html>
